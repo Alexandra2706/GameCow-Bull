@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -8,7 +7,7 @@ public abstract class AbstractGame implements Game {
     private String word;
     private GameStatus status = GameStatus.INIT;
     private Integer maxTry;
-    private List<String> logList = new ArrayList<>();
+    private Logging logging;
 
     /**
      * Генерирует заданную последовательность символов
@@ -36,7 +35,7 @@ public abstract class AbstractGame implements Game {
             result = word.toString();
         }
         System.out.println("Последовательность загадана");
-        logList.add("Загаданная последовательность: " + result);
+        logging.addResult("Загаданная последовательность: " + result);
         return result;
     }
 
@@ -55,7 +54,6 @@ public abstract class AbstractGame implements Game {
 
     @Override
     public Answer inputValue(String value) {
-        logList.add("Номер попытки: " + maxTry + "\t Введенное значение: " + value);
         if (!getGameStatus().equals(GameStatus.START))
             throw new RuntimeException("Игра не в активном состоянии");
         StringBuilder tempWord = new StringBuilder(word);
@@ -79,12 +77,15 @@ public abstract class AbstractGame implements Game {
         } else if (maxTry == 0) {
             status = GameStatus.END;
         }
-        return new Answer(maxTry, countBull, countCow);
+        Answer result = new Answer(maxTry, countBull, countCow);
+        logging.addResult("Введенное значение: " + value + "\t" + result.toString());
+        return result;
     }
 
     @Override
     public void start(Integer sizeWord, Integer maxTry, Unique uniqueVal) {
         if (!status.equals(GameStatus.RESTART)) {
+            logging = new Logging();
             word = generateWord(sizeWord, uniqueVal);
         }
         status = GameStatus.START;
@@ -94,7 +95,7 @@ public abstract class AbstractGame implements Game {
     @Override
     public void restart(Integer sizeWord, Integer maxTry, Unique uniqueVal) {
         status = GameStatus.RESTART;
-        logList.add("Перезапуск игры");
+        logging.addResult("Перезапуск игры");
         start(sizeWord, maxTry, uniqueVal);
     }
 
@@ -102,7 +103,7 @@ public abstract class AbstractGame implements Game {
         return word;
     }
 
-    public List<String> getLog() {
-        return logList;
+    public List<String> getLogList() {
+        return logging.getLogList();
     }
 }

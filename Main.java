@@ -127,7 +127,7 @@ public class Main {
         System.out.println("Было загадано: " + nGame.getWord());
         System.out.println("\nХотите посмотреть историю игры? (y/n)");
         if (scanner.nextLine().equals("y")) {
-            System.out.println(nGame.getLog().stream().collect(Collectors.joining("\n")));
+            System.out.println(nGame.getLogList().stream().collect(Collectors.joining("\n")));
         }
 
     }
